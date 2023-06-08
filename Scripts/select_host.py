@@ -4,6 +4,7 @@
 
 SAVIHOST_PATH = "$(ProgramFiles)\\vsthost\savihost.exe"
 LIVE_PATH = "$(ProgramData)\Ableton\Live 11 Suite\Program\Ableton Live 11 Suite.exe"
+LIVE_LITE_PATH = "$(ProgramData)\Ableton\Live 11 Lite\Program\Ableton Live 11 Lite.exe"
 FL_PATH = "$(ProgramFiles)\Image-Line\FL Studio 20\FL.exe"
 CUBASE_PATH = "$(ProgramFiles)\Steinberg\Cubase 11\Cubase11.exe"
 S1_PATH = "$(ProgramFiles)\PreSonus\Studio One 4\Studio One.exe"
@@ -13,6 +14,7 @@ VST3TESTHOST_PATH = "$(ProgramFiles)\Steinberg\VST3PluginTestHost\VST3PluginTest
 
 SAVIHOST_X64_PATH = "$(ProgramW6432)\\vsthost\savihost.exe"
 LIVE_X64_PATH = "$(ProgramData)\Ableton\Live 11 Suite\Program\Ableton Live 11 Suite.exe"
+LIVE_LITE_X64_PATH = "$(ProgramData)\Ableton\Live 11 Lite\Program\Ableton Live 11 Lite.exe"
 FL_X64_PATH = "$(ProgramFiles)\Image-Line\FL Studio 20\FL64.exe"
 CUBASE_X64_PATH = "$(ProgramW6432)\Steinberg\Cubase 11\Cubase11.exe"
 S1_X64_PATH = "$(ProgramW6432)\PreSonus\Studio One 4\Studio One.exe"
@@ -23,9 +25,9 @@ VST3TESTHOST_X64_PATH = "$(ProgramW6432)\Steinberg\VST3PluginTestHost\VST3Plugin
 SAVIHOST_ARGS = "$(TargetPath) /noload /nosave /noexc /noft"
 REAPER_ARGS = "$(SolutionDir)$(SolutionName).RPP"
 
-PATHS = [SAVIHOST_PATH, LIVE_PATH,  FL_PATH,  CUBASE_PATH,  S1_PATH,  REAPER_PATH,  SONAR_PATH, VST3TESTHOST_PATH]
-PATHS_X64 = [SAVIHOST_X64_PATH, LIVE_X64_PATH,  FL_X64_PATH,  CUBASE_X64_PATH,  S1_X64_PATH,  REAPER_X64_PATH,  SONAR_X64_PATH, VST3TESTHOST_X64_PATH]
-ARGS = [SAVIHOST_ARGS, "", "", "", "", REAPER_ARGS, "", ""]
+PATHS = [SAVIHOST_PATH, LIVE_PATH,  FL_PATH,  CUBASE_PATH,  S1_PATH,  REAPER_PATH,  SONAR_PATH, VST3TESTHOST_PATH, LIVE_LITE_PATH]
+PATHS_X64 = [SAVIHOST_X64_PATH, LIVE_X64_PATH,  FL_X64_PATH,  CUBASE_X64_PATH,  S1_X64_PATH,  REAPER_X64_PATH,  SONAR_X64_PATH, VST3TESTHOST_X64_PATH, LIVE_LITE_X64_PATH]
+ARGS = [SAVIHOST_ARGS, "", "", "", "", REAPER_ARGS, "", "", ""]
 
 from xml.dom import minidom as md
 doc  = md.parse('..\common-win.props')
@@ -39,6 +41,7 @@ print(" 5 - StudioOne")
 print(" 6 - Reaper")
 print(" 7 - Sonar")
 print(" 8 - VST3 Test Host")
+print(" 9 - Live Lite")
 
 # vst2/32bit
 print("choose a host to use for 32bit VST2 debugging...")
