@@ -48,8 +48,8 @@ IGraphics::IGraphics(IGEditorDelegate& dlg, int w, int h, int fps, float scale)
 , mHeight(h)
 , mFPS(fps)
 , mDrawScale(scale)
-, mMinScale(scale / 2)
-, mMaxScale(scale * 2)
+, mMinScale(DEFAULT_MIN_DRAW_SCALE)
+, mMaxScale(DEFAULT_MAX_DRAW_SCALE)
 , mDelegate(&dlg)
 {
   StaticStorage<APIBitmap>::Accessor bitmapStorage(sBitmapCache);
@@ -119,6 +119,12 @@ void IGraphics::Resize(int w, int h, float scale, bool needsPlatformResize)
 void IGraphics::SetLayoutOnResize(bool layoutOnResize)
 {
   mLayoutOnResize = layoutOnResize;
+}
+
+void IGraphics::SetScaleConstraints(float lo, float hi)
+{
+  mMinScale = std::min(lo, hi);
+  mMaxScale = std::max(lo, hi);
 }
 
 void IGraphics::RemoveControlWithTag(int ctrlTag)
@@ -1589,9 +1595,8 @@ ISVG IGraphics::LoadSVG(const char* name, const void* pData, int dataSize, const
   {
     NSVGimage* pImage = nullptr;
 
-    // Because we're taking a const void* pData, but NanoSVG takes a void*, 
     WDL_String svgStr;
-    svgStr.Set((const char*)pData, dataSize);
+    svgStr.Set(reinterpret_cast<const char*>(pData), dataSize);
     pImage = nsvgParse(svgStr.Get(), units, dpi);
 
     if (!pImage)
@@ -2723,7 +2728,7 @@ void IGraphics::DrawFittedBitmap(const IBitmap& bitmap, const IRECT& bounds, con
   PathTransformRestore();
 }
 
-void IGraphics::DrawSVG(const ISVG& svg, const IRECT& dest, const IBlend* pBlend)
+void IGraphics::DrawSVG(const ISVG& svg, const IRECT& dest, const IBlend* pBlend, const IColor* pStrokeColor, const IColor* pFillColor)
 {
   float xScale = dest.W() / svg.W();
   float yScale = dest.H() / svg.H();
@@ -2732,7 +2737,7 @@ void IGraphics::DrawSVG(const ISVG& svg, const IRECT& dest, const IBlend* pBlend
   PathTransformSave();
   PathTransformTranslate(dest.L, dest.T);
   PathTransformScale(scale);
-  DoDrawSVG(svg, pBlend);
+  DoDrawSVG(svg, pBlend, pStrokeColor, pFillColor);
   PathTransformRestore();
 }
 
@@ -2786,7 +2791,7 @@ IPattern IGraphics::GetSVGPattern(const NSVGpaint& paint, float opacity)
   }
 }
 
-void IGraphics::DoDrawSVG(const ISVG& svg, const IBlend* pBlend)
+void IGraphics::DoDrawSVG(const ISVG& svg, const IBlend* pBlend, const IColor* pStrokeColor, const IColor* pFillColor)
 {
 #ifdef SVG_USE_SKIA
   SkCanvas* canvas = static_cast<SkCanvas*>(GetDrawContext());
@@ -2855,7 +2860,7 @@ void IGraphics::DoDrawSVG(const ISVG& svg, const IBlend* pBlend)
       options.mFillRule = EFillRule::Preserve;
       
       options.mPreserve = pShape->stroke.type != NSVG_PAINT_NONE;
-      PathFill(GetSVGPattern(pShape->fill, pShape->opacity), options, pBlend);
+      PathFill(pFillColor ? IPattern(*pFillColor) : GetSVGPattern(pShape->fill, pShape->opacity), options, pBlend);
     }
     
     // Stroke
@@ -2881,7 +2886,7 @@ void IGraphics::DoDrawSVG(const ISVG& svg, const IBlend* pBlend)
       
       options.mDash.SetDash(pShape->strokeDashArray, pShape->strokeDashOffset, pShape->strokeDashCount);
       
-      PathStroke(GetSVGPattern(pShape->stroke, pShape->opacity), pShape->strokeWidth, options, pBlend);
+      PathStroke(pStrokeColor ? IPattern(*pStrokeColor) : GetSVGPattern(pShape->stroke, pShape->opacity), pShape->strokeWidth, options, pBlend);
     }
   }
 #endif

@@ -102,8 +102,10 @@ public:
   /** Draw an SVG image to the graphics context
    * @param svg The SVG image to the graphics context
    * @param bounds The rectangular region to draw the image in
-   * @param pBlend Optional blend method */
-  virtual void DrawSVG(const ISVG& svg, const IRECT& bounds, const IBlend* pBlend = 0);
+   * @param pBlend Optional blend method
+   * @param pStrokeColor Optional color to override all SVG stroke commands
+   * @param pFillColor Optional color to override all SVG fill commands */
+  virtual void DrawSVG(const ISVG& svg, const IRECT& bounds, const IBlend* pBlend = 0, const IColor* pStrokeColor = nullptr, const IColor* pFillColor = nullptr);
 
   /** Draw an SVG image to the graphics context with rotation
    * @param svg The SVG image to draw to the graphics context
@@ -761,7 +763,7 @@ public:
 private:
   IPattern GetSVGPattern(const NSVGpaint& paint, float opacity);
 
-  void DoDrawSVG(const ISVG& svg, const IBlend* pBlend = nullptr);
+  void DoDrawSVG(const ISVG& svg, const IBlend* pBlend = nullptr, const IColor* pStrokeColor = nullptr, const IColor* pFillColor = nullptr);
   
   /** Prepare a particular area of the display for drawing, normally resulting in clipping of the region.
    * @param bounds The rectangular region to prepare  */
@@ -1026,14 +1028,10 @@ public:
    * @param pMenu The menu that was clicked */
   void SetControlValueAfterPopupMenu(IPopupMenu* pMenu);
     
-  /** \todo 
-   * @param lo \todo
-   * @param hi \todo */
-  void SetScaleConstraints(float lo, float hi)
-  {
-    mMinScale = std::min(lo, hi);
-    mMaxScale = std::max(lo, hi);
-  }
+  /** Sets the minimum and maximum (draw) scaling values
+   * @param lo The minimum scalar that the IGraphics context can be scaled down to
+   * @param hi The maxiumum scalar that the IGraphics context can be scaled up to */
+  void SetScaleConstraints(float lo, float hi);
   
   /** \todo detailed description of how this works
    * @param w New width in pixels
